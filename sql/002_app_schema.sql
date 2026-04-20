@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS user_settings (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  default_study_minutes INTEGER NOT NULL DEFAULT 25,
+  default_break_minutes INTEGER NOT NULL DEFAULT 5,
+  master_volume INTEGER NOT NULL DEFAULT 100,
+  music_volume INTEGER NOT NULL DEFAULT 100,
+  sfx_volume INTEGER NOT NULL DEFAULT 100,
+  ambient_volume INTEGER NOT NULL DEFAULT 100,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS study_daily (
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  study_date DATE NOT NULL,
+  seconds_studied INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (user_id, study_date)
+);
+
+CREATE TABLE IF NOT EXISTS study_totals (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  total_seconds INTEGER NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

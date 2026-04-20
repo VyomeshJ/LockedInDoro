@@ -30,5 +30,8 @@ jobs:
           pwd
           ls -la
 
-      - name: Deploy containers
+      - name: Build and restart containers
         run: docker compose up -d --build
+
+      - name: Show container status
+        run: docker compose ps

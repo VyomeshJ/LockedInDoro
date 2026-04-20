@@ -25,5 +25,10 @@ jobs:
           AUTH_GOOGLE_SECRET=${{ secrets.AUTH_GOOGLE_SECRET }}
           EOF
 
+      - name: Show working directory
+        run: |
+          pwd
+          ls -la
+
       - name: Deploy containers
         run: docker compose up -d --build

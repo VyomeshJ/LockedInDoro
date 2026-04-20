@@ -3,9 +3,10 @@ CREATE TABLE IF NOT EXISTS user_settings (
   default_study_minutes INTEGER NOT NULL DEFAULT 25,
   default_break_minutes INTEGER NOT NULL DEFAULT 5,
   master_volume INTEGER NOT NULL DEFAULT 100,
-  music_volume INTEGER NOT NULL DEFAULT 100,
-  sfx_volume INTEGER NOT NULL DEFAULT 100,
-  ambient_volume INTEGER NOT NULL DEFAULT 100,
+  rain_volume INTEGER NOT NULL DEFAULT 50,
+  fireplace_volume INTEGER NOT NULL DEFAULT 50,
+  birds_volume INTEGER NOT NULL DEFAULT 50,
+  water_volume INTEGER NOT NULL DEFAULT 50,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

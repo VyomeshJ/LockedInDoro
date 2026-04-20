@@ -100,10 +100,10 @@ export default function Music({
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center px-6 gap-8 min-h-0">
+    <div className="w-full h-full min-h-0 flex flex-col items-center px-6 py-4 gap-4 overflow-hidden">
       <h1 className="font-pixel text-7xl shrink-0">Sounds</h1>
 
-      <div className="w-full max-w-xl flex flex-col gap-6 font-pixel text-2xl flex-1 min-h-0">
+      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-2xl flex-1 min-h-0 overflow-hidden">
         <div className="flex flex-col gap-2 shrink-0">
           <div className="flex justify-between items-center">
             <span>Master Volume</span>

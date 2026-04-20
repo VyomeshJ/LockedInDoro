@@ -5,7 +5,6 @@ import { useState } from "react";
 import Timer from "@/components/Timer";
 import Music from "@/components/Music";
 import Stats from "@/components/Stats";
-import SignOutButton from "@/components/SignoutButton";
 import SignInButton from "@/components/SignInButton";
 
 type HomeClientProps = {
@@ -44,8 +43,8 @@ export default function HomeClient({
     <div className="bg-[#182229] w-[100svw] h-[100svh] p-12 flex justify-center items-center relative">
       <SignInButton />
 
-      <div className="w-[60%] h-[70%] max-w-2xl bg-[#2c3c3f] rounded-xl flex flex-col justify-between items-center p-6">
-        <div className="w-full flex flex-row gap-12 justify-between items-center px-6">
+      <div className="w-full md:w-[60%] h-[90%] md:h-[70%] max-w-2xl bg-[#2c3c3f] rounded-xl flex flex-col items-center p-6 overflow-hidden">
+        <div className="w-full flex flex-row gap-12 justify-between items-center px-6 shrink-0">
           <div
             className={`px-4 py-4 rounded-md flex flex-row justify-center items-center ${
               colSelected === 0 ? "bg-[#182229]" : "bg-transparent"
@@ -107,37 +106,51 @@ export default function HomeClient({
           </div>
         </div>
 
-        <div
-          className={
-            colSelected === 0
-              ? "w-full h-full flex flex-col justify-center items-center"
-              : "hidden"
-          }
-        >
-          <Timer
-            isLoggedIn={isLoggedIn}
-            initialStudyMinutes={initialStudyMinutes}
-            initialBreakMinutes={initialBreakMinutes}
-          />
-        </div>
+        <div className="w-full flex-1 min-h-0">
+          <div
+            className={
+              colSelected === 0
+                ? "w-full h-full min-h-0 flex flex-col justify-center items-center"
+                : "hidden"
+            }
+          >
+            <Timer
+              isLoggedIn={isLoggedIn}
+              initialStudyMinutes={initialStudyMinutes}
+              initialBreakMinutes={initialBreakMinutes}
+            />
+          </div>
 
-        <div className={colSelected === 1 ? "block w-full h-full" : "hidden"}>
-          <Music
-            initialMasterVolume={initialMasterVolume}
-            initialRainVolume={initialRainVolume}
-            initialFireplaceVolume={initialFireplaceVolume}
-            initialBirdsVolume={initialBirdsVolume}
-            initialWaterVolume={initialWaterVolume}
-          />
-        </div>
+          <div
+            className={
+              colSelected === 1
+                ? "w-full h-full min-h-0"
+                : "hidden"
+            }
+          >
+            <Music
+              initialMasterVolume={initialMasterVolume}
+              initialRainVolume={initialRainVolume}
+              initialFireplaceVolume={initialFireplaceVolume}
+              initialBirdsVolume={initialBirdsVolume}
+              initialWaterVolume={initialWaterVolume}
+            />
+          </div>
 
-        <div className={colSelected === 2 ? "block w-full h-full" : "hidden"}>
-          <Stats
-            isLoggedIn={isLoggedIn}
-            totalMinutes={totalMinutes}
-            todayMinutes={todayMinutes}
-            weekStats={weekStats}
-          />
+          <div
+            className={
+              colSelected === 2
+                ? "w-full h-full min-h-0"
+                : "hidden"
+            }
+          >
+            <Stats
+              isLoggedIn={isLoggedIn}
+              totalMinutes={totalMinutes}
+              todayMinutes={todayMinutes}
+              weekStats={weekStats}
+            />
+          </div>
         </div>
       </div>
     </div>

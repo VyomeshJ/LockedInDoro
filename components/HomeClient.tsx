@@ -41,7 +41,7 @@ export default function HomeClient({
 
   return (
     <div className="bg-[#182229] w-full min-h-[100svh] flex flex-col relative overflow-hidden p-4">
-      <div className="w-full flex justify-end shrink-0 mb-4">
+      <div className="w-full flex justify-end shrink-0 mb-4 z-30">
         <SignInButton />
       </div>
 

@@ -14,7 +14,6 @@ export default function SignInButton() {
     <div className="relative">
       {isLoggedIn ? (
         <div className="relative">
-          {/* Avatar */}
           <Image
             src={session.user.image || "/Images/default-avatar.png"}
             alt="Profile"

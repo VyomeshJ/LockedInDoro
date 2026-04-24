@@ -100,15 +100,18 @@ export default function Music({
   };
 
   return (
-    <div className="w-full h-full min-h-0 flex flex-col items-center px-3 sm:px-4 md:px-6 py-2 sm:py-4 gap-4 overflow-hidden">
-      <h1 className="font-pixel text-[clamp(3rem,8vw,4.5rem)] shrink-0">Sounds</h1>
+    <div className="w-full h-full min-h-0 flex flex-col items-center px-6 py-4 gap-4 overflow-hidden">
+      <h1 className="font-pixel text-[4.5rem] leading-none shrink-0">
+        Sounds
+      </h1>
 
-      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-base sm:text-xl md:text-2xl flex-1 min-h-0 overflow-hidden">
+      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-2xl flex-1 min-h-0 overflow-hidden">
         <div className="flex flex-col gap-2 shrink-0">
           <div className="flex justify-between items-center">
             <span>Master Volume</span>
             <span>{masterVolume}</span>
           </div>
+
           <input
             type="range"
             min="0"
@@ -117,6 +120,7 @@ export default function Music({
             onChange={async (e) => {
               const newMasterVolume = Number(e.target.value);
               setMasterVolume(newMasterVolume);
+
               await saveMusicSettings(
                 newMasterVolume,
                 rainVolume,
@@ -129,12 +133,13 @@ export default function Music({
           />
         </div>
 
-        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2">
+        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-2">
           <SoundRow
             label="Rain"
             volume={rainVolume}
             setVolume={async (value) => {
               setRainVolume(value);
+
               await saveMusicSettings(
                 masterVolume,
                 value,
@@ -152,6 +157,7 @@ export default function Music({
             volume={fireplaceVolume}
             setVolume={async (value) => {
               setFireplaceVolume(value);
+
               await saveMusicSettings(
                 masterVolume,
                 rainVolume,
@@ -171,6 +177,7 @@ export default function Music({
             volume={birdsVolume}
             setVolume={async (value) => {
               setBirdsVolume(value);
+
               await saveMusicSettings(
                 masterVolume,
                 rainVolume,
@@ -190,6 +197,7 @@ export default function Music({
             volume={waterVolume}
             setVolume={async (value) => {
               setWaterVolume(value);
+
               await saveMusicSettings(
                 masterVolume,
                 rainVolume,
@@ -233,10 +241,8 @@ function SoundRow({
     <div className="flex flex-col gap-2 p-4 rounded-xl bg-[#182229] shrink-0">
       <div className="flex justify-between items-center gap-4">
         <span>{label}</span>
-        <button
-          onClick={onToggle}
-          className="px-3 py-1 rounded-md bg-[#24323b]"
-        >
+
+        <button onClick={onToggle} className="px-3 py-1 rounded-md bg-[#24323b]">
           {isPlaying ? "Pause" : "Play"}
         </button>
       </div>
@@ -250,7 +256,8 @@ function SoundRow({
           onChange={(e) => setVolume(Number(e.target.value))}
           className="w-full accent-white"
         />
-        <span className="w-10 sm:w-12 text-right shrink-0">{volume}</span>
+
+        <span className="w-12 text-right shrink-0">{volume}</span>
       </div>
     </div>
   );

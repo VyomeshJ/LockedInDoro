@@ -40,14 +40,14 @@ export default function HomeClient({
   const [colSelected, setColSelected] = useState(0);
 
   return (
-    <div className="bg-[#182229] w-full min-h-[100svh] flex justify-center items-center relative overflow-hidden p-4">
-      <div className="absolute top-4 right-4 z-20">
+    <div className="bg-[#182229] w-full min-h-[100svh] flex flex-col relative overflow-hidden p-4">
+      <div className="w-full flex justify-end shrink-0 mb-4">
         <SignInButton />
       </div>
 
-      <div className="origin-center scale-[min(1,calc((100vw-32px)/640),calc((100svh-32px)/860))]">
-        <div className="w-[440px] h-[660px] bg-[#2c3c3f] rounded-xl flex flex-col items-center p-6 overflow-hidden">
-          <div className="w-full flex flex-row gap-12 justify-between items-center px-6 shrink-0">
+      <div className="flex-1 flex justify-center items-center">
+        <div className="w-full max-w-[440px] h-[calc(100svh-96px)] max-h-[660px] min-h-[520px] bg-[#2c3c3f] rounded-xl flex flex-col items-center p-4 md:p-6 overflow-hidden">
+          <div className="w-full flex flex-row justify-between items-center gap-2 md:gap-12 px-0 md:px-6 shrink-0">
             <NavButton
               selected={colSelected === 0}
               onClick={() => setColSelected(0)}
@@ -125,28 +125,26 @@ type NavButtonProps = {
   src: string;
 };
 
-
 function NavButton({ selected, onClick, label, src }: NavButtonProps) {
   return (
     <div
-      className={`px-4 py-4 rounded-md flex justify-center items-center ${
+      className={`p-3 md:px-4 md:py-4 rounded-md flex justify-center items-center ${
         selected ? "bg-[#182229]" : "bg-transparent"
       }`}
     >
       <button
-        className="w-12 h-12 flex items-center justify-center"
+        className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center"
         onClick={onClick}
         aria-label={label}
       >
-        {/* INNER BOX to normalize icon size */}
-        <div className="relative w-8 h-8">
+        <div className="relative w-7 h-7 md:w-8 md:h-8">
           <Image
             loading="eager"
             sizes="32px"
             alt={label}
             src={src}
             fill
-            className="object-contain scale-100 [image-rendering:pixelated]"
+            className="object-contain [image-rendering:pixelated]"
           />
         </div>
       </button>

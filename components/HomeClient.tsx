@@ -125,26 +125,30 @@ type NavButtonProps = {
   src: string;
 };
 
+
 function NavButton({ selected, onClick, label, src }: NavButtonProps) {
   return (
     <div
-      className={`px-4 py-4 rounded-md flex flex-row justify-center items-center ${
+      className={`px-4 py-4 rounded-md flex justify-center items-center ${
         selected ? "bg-[#182229]" : "bg-transparent"
       }`}
     >
       <button
-        className="w-12 h-12 relative"
+        className="w-12 h-12 flex items-center justify-center"
         onClick={onClick}
         aria-label={label}
       >
-        <Image
-          loading="eager"
-          sizes="48px"
-          alt={label}
-          src={src}
-          fill
-          className="object-contain [image-rendering:pixelated]"
-        />
+        {/* INNER BOX to normalize icon size */}
+        <div className="relative w-8 h-8">
+          <Image
+            loading="eager"
+            sizes="32px"
+            alt={label}
+            src={src}
+            fill
+            className="object-contain scale-100 [image-rendering:pixelated]"
+          />
+        </div>
       </button>
     </div>
   );

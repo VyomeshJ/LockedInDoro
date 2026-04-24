@@ -100,10 +100,10 @@ export default function Music({
   };
 
   return (
-    <div className="w-full h-full min-h-0 flex flex-col items-center px-6 py-4 gap-4 overflow-hidden">
-      <h1 className="font-pixel text-7xl shrink-0">Sounds</h1>
+    <div className="w-full h-full min-h-0 flex flex-col items-center px-3 sm:px-4 md:px-6 py-2 sm:py-4 gap-4 overflow-hidden">
+      <h1 className="font-pixel text-[clamp(3rem,8vw,4.5rem)] shrink-0">Sounds</h1>
 
-      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-2xl flex-1 min-h-0 overflow-hidden">
+      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-base sm:text-xl md:text-2xl flex-1 min-h-0 overflow-hidden">
         <div className="flex flex-col gap-2 shrink-0">
           <div className="flex justify-between items-center">
             <span>Master Volume</span>
@@ -129,7 +129,7 @@ export default function Music({
           />
         </div>
 
-        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-2 custom-scroll">
+        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2">
           <SoundRow
             label="Rain"
             volume={rainVolume}
@@ -250,7 +250,7 @@ function SoundRow({
           onChange={(e) => setVolume(Number(e.target.value))}
           className="w-full accent-white"
         />
-        <span className="w-12 text-right shrink-0">{volume}</span>
+        <span className="w-10 sm:w-12 text-right shrink-0">{volume}</span>
       </div>
     </div>
   );

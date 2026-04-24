@@ -58,24 +58,24 @@ export default function Timer({
     });
   }
 
-    async function recordStudySession(seconds: number) {
-        if (!isLoggedIn) return;
-        if (seconds <= 0) return;
+  async function recordStudySession(seconds: number) {
+    if (!isLoggedIn) return;
+    if (seconds <= 0) return;
 
-        const res = await fetch("/api/study/session", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-            seconds,
-            }),
-        });
+    const res = await fetch("/api/study/session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        seconds,
+      }),
+    });
 
-        if (res.ok) {
-            router.refresh();
-        }
+    if (res.ok) {
+      router.refresh();
     }
+  }
 
   async function flushStudyAccumulator() {
     if (minuteAccumulatorRef.current > 0) {
@@ -256,144 +256,146 @@ export default function Timer({
   };
 
   return (
-    <div className="w-full flex flex-col justify-between items-center px-6 gap-12">
-      <div>
-        <h1 className="font-pixel text-9xl">
-          {stateStudying
-            ? `${studying_minutes}:${studying_seconds
-                .toString()
-                .padStart(2, "0")}`
-            : `${break_minutes}:${break_seconds.toString().padStart(2, "0")}`}
-        </h1>
-      </div>
-
-      <div className="flex flex-row justify-center items-center">
-        <div
-          className={`px-2 py-2 w-36 rounded-md flex flex-row justify-center items-center ${
-            stateStudying ? "bg-[#182229]" : "bg-transparent"
-          }`}
-        >
-          <button
-            className="font-pixel text-3xl relative"
-            onClick={() => {
-              void handleSwitchToStudying();
-            }}
-          >
-            Studying
-          </button>
+    <div className="w-full h-full min-h-0 overflow-y-auto">
+      <div className="w-full min-h-full flex flex-col justify-center items-center px-3 sm:px-4 md:px-6 py-2 sm:py-4 gap-6 sm:gap-8 md:gap-10">
+        <div className="shrink-0">
+          <h1 className="font-pixel leading-none text-[clamp(4rem,11vw,7rem)]">
+            {stateStudying
+              ? `${studying_minutes}:${studying_seconds
+                  .toString()
+                  .padStart(2, "0")}`
+              : `${break_minutes}:${break_seconds.toString().padStart(2, "0")}`}
+          </h1>
         </div>
 
-        <div
-          className={`px-2 py-2 w-36 rounded-md flex flex-row justify-center items-center ${
-            !stateStudying ? "bg-[#182229]" : "bg-transparent"
-          }`}
-        >
-          <button
-            className="font-pixel text-3xl relative"
-            onClick={() => {
-              void handleSwitchToBreak();
-            }}
+        <div className="flex flex-row justify-center items-center shrink-0">
+          <div
+            className={`px-2 py-2 w-28 sm:w-32 md:w-36 rounded-md flex flex-row justify-center items-center ${
+              stateStudying ? "bg-[#182229]" : "bg-transparent"
+            }`}
           >
-            Break
-          </button>
-        </div>
-      </div>
-
-      <div className="flex flex-row justify-center items-start gap-8 font-pixel text-2xl">
-        <div className="flex flex-col items-center gap-2">
-          <span>Study: {defaultStudyingTime / 60}m</span>
-          <div className="flex gap-2">
             <button
-              className="px-3 py-1 rounded bg-[#182229]"
+              className="font-pixel text-lg sm:text-2xl md:text-3xl relative"
               onClick={() => {
-                void changeStudyMinutes(-5);
+                void handleSwitchToStudying();
               }}
             >
-              -
+              Studying
             </button>
+          </div>
+
+          <div
+            className={`px-2 py-2 w-28 sm:w-32 md:w-36 rounded-md flex flex-row justify-center items-center ${
+              !stateStudying ? "bg-[#182229]" : "bg-transparent"
+            }`}
+          >
             <button
-              className="px-3 py-1 rounded bg-[#182229]"
+              className="font-pixel text-lg sm:text-2xl md:text-3xl relative"
               onClick={() => {
-                void changeStudyMinutes(5);
+                void handleSwitchToBreak();
               }}
             >
-              +
+              Break
             </button>
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-2">
-          <span>Break: {defaultBreakTime / 60}m</span>
-          <div className="flex gap-2">
+        <div className="flex flex-row justify-center items-start gap-4 sm:gap-6 md:gap-8 font-pixel text-sm sm:text-xl md:text-2xl shrink-0">
+          <div className="flex flex-col items-center gap-2">
+            <span>Study: {defaultStudyingTime / 60}m</span>
+            <div className="flex gap-2">
+              <button
+                className="px-3 py-1 rounded bg-[#182229]"
+                onClick={() => {
+                  void changeStudyMinutes(-5);
+                }}
+              >
+                -
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-[#182229]"
+                onClick={() => {
+                  void changeStudyMinutes(5);
+                }}
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <span>Break: {defaultBreakTime / 60}m</span>
+            <div className="flex gap-2">
+              <button
+                className="px-3 py-1 rounded bg-[#182229]"
+                onClick={() => {
+                  void changeBreakMinutes(-1);
+                }}
+              >
+                -
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-[#182229]"
+                onClick={() => {
+                  void changeBreakMinutes(1);
+                }}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-row justify-center items-center gap-2 shrink-0">
+          <div
+            className={`p-3 sm:p-4 rounded-xl flex justify-center items-center ${
+              studyingIsRunning || breakIsRunning
+                ? "bg-[#182229]"
+                : "bg-transparent"
+            }`}
+          >
             <button
-              className="px-3 py-1 rounded bg-[#182229]"
+              className="font-pixel text-3xl relative"
               onClick={() => {
-                void changeBreakMinutes(-1);
+                void handleStartPause();
               }}
             >
-              -
+              <Image
+                loading="eager"
+                width={48}
+                height={48}
+                alt="Start or pause"
+                src={
+                  studyingIsRunning || breakIsRunning
+                    ? "/Images/PauseButton.png"
+                    : "/Images/StartButton.png"
+                }
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain [image-rendering:pixelated]"
+              />
             </button>
+          </div>
+
+          <div className="p-3 sm:p-4 rounded-xl flex justify-center items-center">
             <button
-              className="px-3 py-1 rounded bg-[#182229]"
+              className="font-pixel text-3xl"
               onClick={() => {
-                void changeBreakMinutes(1);
+                void handleReset();
               }}
             >
-              +
+              <Image
+                loading="eager"
+                width={48}
+                height={48}
+                alt="Reset"
+                src="/Images/ResetButton.png"
+                className="w-10 h-10 sm:w-12 sm:h-12 object-contain [image-rendering:pixelated]"
+              />
             </button>
           </div>
         </div>
+
+        <audio ref={bellRef} src="/Sounds/bell.mp3" preload="auto" />
       </div>
-
-      <div className="flex flex-row justify-center items-center gap-2">
-        <div
-          className={`p-4 rounded-xl flex justify-center items-center ${
-            studyingIsRunning || breakIsRunning
-              ? "bg-[#182229]"
-              : "bg-transparent"
-          }`}
-        >
-          <button
-            className="font-pixel text-3xl relative"
-            onClick={() => {
-              void handleStartPause();
-            }}
-          >
-            <Image
-              loading="eager"
-              width={48}
-              height={48}
-              alt="Start or pause"
-              src={
-                studyingIsRunning || breakIsRunning
-                  ? "/Images/PauseButton.png"
-                  : "/Images/StartButton.png"
-              }
-              className="object-contain [image-rendering:pixelated]"
-            />
-          </button>
-        </div>
-
-        <div className="p-4 rounded-xl flex justify-center items-center">
-          <button
-            className="font-pixel text-3xl"
-            onClick={() => {
-              void handleReset();
-            }}
-          >
-            <Image
-              loading="eager"
-              width={48}
-              height={48}
-              alt="Reset"
-              src="/Images/ResetButton.png"
-              className="object-contain [image-rendering:pixelated]"
-            />
-          </button>
-        </div>
-      </div>
-
-      <audio ref={bellRef} src="/Sounds/bell.mp3" preload="auto" />
     </div>
   );
 }

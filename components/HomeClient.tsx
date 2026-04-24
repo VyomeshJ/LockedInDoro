@@ -40,19 +40,35 @@ export default function HomeClient({
   const [colSelected, setColSelected] = useState(0);
 
   return (
-    <div className="bg-[#182229] w-[100svw] h-[100svh] p-12 flex justify-center items-center relative">
-      <SignInButton />
+    <div className="bg-[#182229] w-full min-h-[100svh] px-4 py-6 sm:px-6 sm:py-8 flex justify-center items-center relative overflow-hidden">
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20">
+        <SignInButton />
+      </div>
 
-      <div className="w-full md:w-[60%] h-[90%] md:h-[70%] max-w-2xl bg-[#2c3c3f] rounded-xl flex flex-col items-center p-6 overflow-hidden">
-        <div className="w-full flex flex-row gap-12 justify-between items-center px-6 shrink-0">
+      <div
+        className="
+          w-[min(92vw,640px)]
+          h-[min(78svh,860px)]
+          min-h-[620px]
+          max-h-[860px]
+          bg-[#2c3c3f]
+          rounded-xl
+          flex flex-col
+          items-center
+          p-4 sm:p-5 md:p-6
+          overflow-hidden
+        "
+      >
+        <div className="w-full flex flex-row gap-4 sm:gap-8 md:gap-12 justify-between items-center px-2 sm:px-4 md:px-6 shrink-0">
           <div
-            className={`px-4 py-4 rounded-md flex flex-row justify-center items-center ${
+            className={`px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 rounded-md flex flex-row justify-center items-center ${
               colSelected === 0 ? "bg-[#182229]" : "bg-transparent"
             }`}
           >
             <button
-              className="font-pixel text-3xl w-12 h-12 relative"
+              className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 relative"
               onClick={() => setColSelected(0)}
+              aria-label="Timer"
             >
               <Image
                 loading="eager"
@@ -66,13 +82,14 @@ export default function HomeClient({
           </div>
 
           <div
-            className={`px-4 py-4 rounded-md flex flex-row justify-center items-center ${
+            className={`px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 rounded-md flex flex-row justify-center items-center ${
               colSelected === 1 ? "bg-[#182229]" : "bg-transparent"
             }`}
           >
             <button
-              className="font-pixel text-3xl w-12 h-12 relative"
+              className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 relative"
               onClick={() => setColSelected(1)}
+              aria-label="Music"
             >
               <Image
                 loading="eager"
@@ -86,13 +103,14 @@ export default function HomeClient({
           </div>
 
           <div
-            className={`px-4 py-4 rounded-md flex flex-row justify-center items-center ${
+            className={`px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4 rounded-md flex flex-row justify-center items-center ${
               colSelected === 2 ? "bg-[#182229]" : "bg-transparent"
             }`}
           >
             <button
-              className="font-pixel text-3xl w-12 h-12 relative"
+              className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 relative"
               onClick={() => setColSelected(2)}
+              aria-label="Stats"
             >
               <Image
                 loading="eager"
@@ -106,7 +124,7 @@ export default function HomeClient({
           </div>
         </div>
 
-        <div className="w-full flex-1 min-h-0">
+        <div className="w-full flex-1 min-h-0 pt-3 sm:pt-4">
           <div
             className={
               colSelected === 0
@@ -121,13 +139,7 @@ export default function HomeClient({
             />
           </div>
 
-          <div
-            className={
-              colSelected === 1
-                ? "w-full h-full min-h-0"
-                : "hidden"
-            }
-          >
+          <div className={colSelected === 1 ? "w-full h-full min-h-0" : "hidden"}>
             <Music
               initialMasterVolume={initialMasterVolume}
               initialRainVolume={initialRainVolume}
@@ -137,13 +149,7 @@ export default function HomeClient({
             />
           </div>
 
-          <div
-            className={
-              colSelected === 2
-                ? "w-full h-full min-h-0"
-                : "hidden"
-            }
-          >
+          <div className={colSelected === 2 ? "w-full h-full min-h-0" : "hidden"}>
             <Stats
               isLoggedIn={isLoggedIn}
               totalMinutes={totalMinutes}

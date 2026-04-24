@@ -64,7 +64,10 @@ export default function Timer({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ seconds }),
+      body: JSON.stringify({ 
+        seconds,
+        date: new Date().toLocaleDateString("en-CA"),
+      }),
     });
 
     if (res.ok) {

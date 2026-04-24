@@ -9,10 +9,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { seconds } = await req.json();
+  const { seconds, date } = await req.json();
 
   if (!seconds || seconds <= 0) {
     return NextResponse.json({ error: "Invalid seconds" }, { status: 400 });
+  }
+
+  if (!date) {
+    return NextResponse.json({ error: "Invalid date" }, { status: 400 });
   }
 
   await pool.query(
@@ -27,11 +31,11 @@ export async function POST(req: Request) {
 
   await pool.query(
     `INSERT INTO study_daily (user_id, study_date, seconds_studied)
-     VALUES ($1, CURRENT_DATE, $2)
+     VALUES ($1, $2::date, $3)
      ON CONFLICT (user_id, study_date)
      DO UPDATE SET
        seconds_studied = study_daily.seconds_studied + EXCLUDED.seconds_studied`,
-    [session.user.id, seconds]
+    [session.user.id, date, seconds]
   );
 
   return NextResponse.json({ ok: true });

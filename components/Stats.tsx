@@ -29,7 +29,7 @@ export default function Stats({
 }: StatsProps) {
   if (!isLoggedIn) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center px-6 gap-6 text-center overflow-hidden">
+      <div className="w-full h-full flex flex-col items-center justify-start px-6 gap-6 text-center overflow-hidden">
         <h1 className="font-pixel text-[4.5rem] leading-none shrink-0">
           Stats
         </h1>

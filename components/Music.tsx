@@ -100,7 +100,7 @@ export default function Music({
   };
 
   return (
-    <div className="w-full h-full min-h-0 flex flex-col items-center px-6 py-4 gap-4 overflow-hidden">
+    <div className="w-full h-full min-h-0 flex flex-col justify-start items-center px-6 gap-4 overflow-hidden">
       <h1 className="font-pixel text-[4.5rem] leading-none shrink-0">
         Sounds
       </h1>

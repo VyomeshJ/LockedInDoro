@@ -11,7 +11,7 @@ export default function SignInButton() {
   const isLoggedIn = !!session?.user;
 
   return (
-    <div className="absolute top-6 right-6">
+    <div className="relative">
       {isLoggedIn ? (
         <div className="relative">
           {/* Avatar */}

@@ -100,12 +100,12 @@ export default function Music({
   };
 
   return (
-    <div className="w-full h-full min-h-0 flex flex-col justify-start items-center px-6 gap-4 overflow-hidden">
-      <h1 className="font-pixel text-[4.5rem] leading-none shrink-0">
+    <div className="w-full h-full min-h-0 flex flex-col justify-start items-center px-3 sm:px-6 gap-4 overflow-y-auto">
+      <h1 className="font-pixel text-[clamp(3.25rem,16vw,4.5rem)] leading-none shrink-0">
         Sounds
       </h1>
 
-      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-2xl flex-1 min-h-0 overflow-hidden">
+      <div className="w-full max-w-xl flex flex-col gap-4 font-pixel text-[clamp(1.25rem,5vw,1.5rem)] flex-1 min-h-0">
         <div className="flex flex-col gap-2 shrink-0">
           <div className="flex justify-between items-center">
             <span>Master Volume</span>
@@ -133,7 +133,7 @@ export default function Music({
           />
         </div>
 
-        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-2">
+        <div className="flex flex-col gap-4 flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2">
           <SoundRow
             label="Rain"
             volume={rainVolume}
@@ -238,16 +238,16 @@ function SoundRow({
   onToggle,
 }: SoundRowProps) {
   return (
-    <div className="flex flex-col gap-2 p-4 rounded-xl bg-[#182229] shrink-0">
-      <div className="flex justify-between items-center gap-4">
+    <div className="flex flex-col gap-2 p-3 sm:p-4 rounded-lg bg-[#182229] shrink-0">
+      <div className="flex justify-between items-center gap-3 sm:gap-4">
         <span>{label}</span>
 
-        <button onClick={onToggle} className="px-3 py-1 rounded-md bg-[#24323b]">
+        <button onClick={onToggle} className="min-w-18 px-3 py-1 rounded-md bg-[#24323b]">
           {isPlaying ? "Pause" : "Play"}
         </button>
       </div>
 
-      <div className="flex justify-between items-center gap-4">
+      <div className="flex justify-between items-center gap-3 sm:gap-4">
         <input
           type="range"
           min="0"

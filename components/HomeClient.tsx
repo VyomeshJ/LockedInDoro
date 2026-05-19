@@ -40,14 +40,14 @@ export default function HomeClient({
   const [colSelected, setColSelected] = useState(0);
 
   return (
-    <div className="bg-[#182229] w-full min-h-[100svh] flex flex-col relative overflow-hidden p-4">
-      <div className="w-full flex justify-end shrink-0 mb-4 z-30">
+    <div className="bg-[#182229] w-full h-[100svh] min-h-[420px] flex flex-col relative overflow-hidden p-3 sm:p-4 lg:p-6">
+      <div className="w-full flex justify-end shrink-0 mb-3 sm:mb-4 z-30">
         <SignInButton />
       </div>
 
-      <div className="flex-1 flex justify-center items-center">
-        <div className="w-full max-w-[440px] h-[calc(100svh-96px)] max-h-[660px] min-h-[520px] bg-[#2c3c3f] rounded-xl flex flex-col items-center p-4 md:p-6 overflow-hidden">
-          <div className="w-full flex flex-row justify-between items-center gap-2 md:gap-12 px-0 md:px-6 shrink-0">
+      <div className="flex-1 min-h-0 flex justify-center items-center">
+        <div className="w-full max-w-[620px] h-full max-h-[820px] min-h-0 bg-[#2c3c3f] rounded-lg flex flex-col items-center p-3 sm:p-4 md:p-6 overflow-hidden">
+          <div className="w-full max-w-md grid grid-cols-3 items-center gap-2 sm:gap-4 shrink-0">
             <NavButton
               selected={colSelected === 0}
               onClick={() => setColSelected(0)}
@@ -70,7 +70,7 @@ export default function HomeClient({
             />
           </div>
 
-          <div className="w-full flex-1 min-h-0 pt-4">
+          <div className="w-full flex-1 min-h-0 pt-3 sm:pt-4">
             <div
               className={
                 colSelected === 0
@@ -79,6 +79,7 @@ export default function HomeClient({
               }
             >
               <Timer
+                key={`${isLoggedIn}-${initialStudyMinutes}-${initialBreakMinutes}`}
                 isLoggedIn={isLoggedIn}
                 initialStudyMinutes={initialStudyMinutes}
                 initialBreakMinutes={initialBreakMinutes}
@@ -128,7 +129,7 @@ type NavButtonProps = {
 function NavButton({ selected, onClick, label, src }: NavButtonProps) {
   return (
     <div
-      className={`p-3 md:px-4 md:py-4 rounded-md flex justify-center items-center ${
+      className={`p-2 sm:p-3 md:px-4 md:py-4 rounded-md flex justify-center items-center ${
         selected ? "bg-[#182229]" : "bg-transparent"
       }`}
     >

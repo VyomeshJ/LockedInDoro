@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -17,6 +17,9 @@ export default function Timer({
 }: TimerProps) {
   const bellRef = useRef<HTMLAudioElement | null>(null);
   const minuteAccumulatorRef = useRef(0);
+  const activeDeadlineRef = useRef<number | null>(null);
+  const studyProgressSyncedAtRef = useRef<number | null>(null);
+  const finishHandledRef = useRef(false);
   const router = useRouter();
 
   const [defaultStudyingTime, setDefaultStudyingTime] = useState(
@@ -55,7 +58,7 @@ export default function Timer({
     });
   }
 
-  async function recordStudySession(seconds: number) {
+  const recordStudySession = useCallback(async (seconds: number) => {
     if (!isLoggedIn) return;
     if (seconds <= 0) return;
 
@@ -64,7 +67,7 @@ export default function Timer({
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         seconds,
         date: new Date().toLocaleDateString("en-CA"),
       }),
@@ -73,67 +76,116 @@ export default function Timer({
     if (res.ok) {
       router.refresh();
     }
-  }
+  }, [isLoggedIn, router]);
 
-  async function flushStudyAccumulator() {
+  const flushStudyAccumulator = useCallback(async () => {
     if (minuteAccumulatorRef.current > 0) {
       const secondsToSave = minuteAccumulatorRef.current;
       minuteAccumulatorRef.current = 0;
       await recordStudySession(secondsToSave);
     }
-  }
+  }, [recordStudySession]);
 
-  useEffect(() => {
-    setDefaultStudyingTime(initialStudyMinutes * 60);
-    setDefaultBreakTime(initialBreakMinutes * 60);
-    setStudyingTime(initialStudyMinutes * 60);
-    setBreakTime(initialBreakMinutes * 60);
+  const addStudySeconds = useCallback((seconds: number) => {
+    if (seconds <= 0) return;
+
+    minuteAccumulatorRef.current += seconds;
+
+    while (minuteAccumulatorRef.current >= 60) {
+      minuteAccumulatorRef.current -= 60;
+      void recordStudySession(60);
+    }
+  }, [recordStudySession]);
+
+  const syncStudyProgress = useCallback((now = Date.now()) => {
+    const deadline = activeDeadlineRef.current;
+    const syncedAt = studyProgressSyncedAtRef.current;
+
+    if (deadline === null || syncedAt === null) return;
+
+    const cappedNow = Math.min(now, deadline);
+    const elapsedSeconds = Math.floor((cappedNow - syncedAt) / 1000);
+
+    if (elapsedSeconds <= 0) return;
+
+    addStudySeconds(elapsedSeconds);
+    studyProgressSyncedAtRef.current = syncedAt + elapsedSeconds * 1000;
+  }, [addStudySeconds]);
+
+  const clearActiveClock = useCallback(() => {
+    activeDeadlineRef.current = null;
+    studyProgressSyncedAtRef.current = null;
+    finishHandledRef.current = false;
+  }, []);
+
+  const pauseStudyTimer = useCallback(async () => {
+    syncStudyProgress();
+    clearActiveClock();
     setStudyingIsRunning(false);
-    setBreakIsRunning(false);
-    setStateStudying(true);
-    minuteAccumulatorRef.current = 0;
-  }, [initialStudyMinutes, initialBreakMinutes]);
-
-  useEffect(() => {
-    if (!studyingIsRunning) return;
-
-    const interval = setInterval(() => {
-      setStudyingTime((prev) => Math.max(prev - 1, 0));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [studyingIsRunning]);
-
-  useEffect(() => {
-    if (!breakIsRunning) return;
-
-    const interval = setInterval(() => {
-      setBreakTime((prev) => Math.max(prev - 1, 0));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [breakIsRunning]);
+    await flushStudyAccumulator();
+  }, [clearActiveClock, flushStudyAccumulator, syncStudyProgress]);
 
   useEffect(() => {
     if (!studyingIsRunning || !stateStudying) return;
-    if (studyingTime <= 0) return;
 
-    minuteAccumulatorRef.current += 1;
+    const updateRemaining = () => {
+      syncStudyProgress();
 
-    if (minuteAccumulatorRef.current >= 60) {
-      void recordStudySession(60);
-      minuteAccumulatorRef.current = 0;
-    }
-  }, [studyingTime, studyingIsRunning, stateStudying, isLoggedIn]);
+      const deadline = activeDeadlineRef.current;
+      if (deadline === null) return;
+
+      setStudyingTime(Math.max(Math.ceil((deadline - Date.now()) / 1000), 0));
+    };
+
+    updateRemaining();
+
+    const interval = setInterval(updateRemaining, 1000);
+    window.addEventListener("visibilitychange", updateRemaining);
+    window.addEventListener("focus", updateRemaining);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("visibilitychange", updateRemaining);
+      window.removeEventListener("focus", updateRemaining);
+    };
+  }, [studyingIsRunning, stateStudying, syncStudyProgress]);
+
+  useEffect(() => {
+    if (!breakIsRunning || stateStudying) return;
+
+    const updateRemaining = () => {
+      const deadline = activeDeadlineRef.current;
+      if (deadline === null) return;
+
+      setBreakTime(Math.max(Math.ceil((deadline - Date.now()) / 1000), 0));
+    };
+
+    updateRemaining();
+
+    const interval = setInterval(updateRemaining, 1000);
+    window.addEventListener("visibilitychange", updateRemaining);
+    window.addEventListener("focus", updateRemaining);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("visibilitychange", updateRemaining);
+      window.removeEventListener("focus", updateRemaining);
+    };
+  }, [breakIsRunning, stateStudying]);
 
   useEffect(() => {
     if (!studyingIsRunning || !stateStudying || studyingTime !== 0) return;
+    if (finishHandledRef.current) return;
+
+    finishHandledRef.current = true;
 
     void (async () => {
+      syncStudyProgress();
       bellRef.current?.play();
 
       await flushStudyAccumulator();
 
+      clearActiveClock();
       setStudyingIsRunning(false);
       setStateStudying(false);
       setStudyingTime(defaultStudyingTime);
@@ -145,12 +197,18 @@ export default function Timer({
     stateStudying,
     defaultStudyingTime,
     defaultBreakTime,
+    clearActiveClock,
+    flushStudyAccumulator,
+    syncStudyProgress,
   ]);
 
   useEffect(() => {
     if (!breakIsRunning || stateStudying || breakTime !== 0) return;
+    if (finishHandledRef.current) return;
 
+    finishHandledRef.current = true;
     bellRef.current?.play();
+    clearActiveClock();
     setBreakIsRunning(false);
     setStateStudying(true);
     setBreakTime(defaultBreakTime);
@@ -161,15 +219,16 @@ export default function Timer({
     stateStudying,
     defaultBreakTime,
     defaultStudyingTime,
+    clearActiveClock,
   ]);
 
   const changeStudyMinutes = async (amount: number) => {
     if (stateStudying && studyingIsRunning) {
-      setStudyingIsRunning(false);
-      await flushStudyAccumulator();
+      await pauseStudyTimer();
     }
 
     minuteAccumulatorRef.current = 0;
+    clearActiveClock();
 
     const currentMinutes = defaultStudyingTime / 60;
     const newMinutes = Math.min(60, Math.max(5, currentMinutes + amount));
@@ -185,6 +244,10 @@ export default function Timer({
   };
 
   const changeBreakMinutes = async (amount: number) => {
+    if (!stateStudying && breakIsRunning) {
+      clearActiveClock();
+    }
+
     setBreakIsRunning(false);
 
     const currentMinutes = defaultBreakTime / 60;
@@ -203,6 +266,7 @@ export default function Timer({
   const handleSwitchToStudying = async () => {
     if (stateStudying) return;
 
+    clearActiveClock();
     setBreakIsRunning(false);
     setStateStudying(true);
     setBreakTime(defaultBreakTime);
@@ -214,10 +278,10 @@ export default function Timer({
     if (!stateStudying) return;
 
     if (studyingIsRunning) {
-      setStudyingIsRunning(false);
-      await flushStudyAccumulator();
+      await pauseStudyTimer();
     }
 
+    clearActiveClock();
     setStateStudying(false);
     setStudyingTime(defaultStudyingTime);
     setBreakTime(defaultBreakTime);
@@ -227,37 +291,50 @@ export default function Timer({
   const handleStartPause = async () => {
     if (stateStudying) {
       if (studyingIsRunning) {
-        setStudyingIsRunning(false);
-        await flushStudyAccumulator();
+        await pauseStudyTimer();
       } else {
+        const now = Date.now();
+
+        activeDeadlineRef.current = now + studyingTime * 1000;
+        studyProgressSyncedAtRef.current = now;
+        finishHandledRef.current = false;
         setBreakIsRunning(false);
         setStudyingIsRunning(true);
       }
     } else {
       setStudyingIsRunning(false);
-      setBreakIsRunning((prev) => !prev);
+
+      if (breakIsRunning) {
+        clearActiveClock();
+        setBreakIsRunning(false);
+      } else {
+        activeDeadlineRef.current = Date.now() + breakTime * 1000;
+        finishHandledRef.current = false;
+        setBreakIsRunning(true);
+      }
     }
   };
 
   const handleReset = async () => {
     if (stateStudying) {
       if (studyingIsRunning) {
-        setStudyingIsRunning(false);
-        await flushStudyAccumulator();
+        await pauseStudyTimer();
       }
 
+      clearActiveClock();
       setStudyingTime(defaultStudyingTime);
       minuteAccumulatorRef.current = 0;
     } else {
+      clearActiveClock();
       setBreakIsRunning(false);
       setBreakTime(defaultBreakTime);
     }
   };
 
   return (
-    <div className="w-full h-full min-h-0 overflow-hidden">
-      <div className="w-full h-full flex flex-col justify-center items-center px-6 py-4 gap-10">
-        <h1 className="font-pixel leading-none text-[7rem] shrink-0 text-center translate-x-[2px]">
+    <div className="w-full h-full min-h-0 overflow-y-auto">
+      <div className="w-full min-h-full flex flex-col justify-center items-center px-3 sm:px-6 py-4 gap-[clamp(1.25rem,5svh,2.5rem)]">
+        <h1 className="font-pixel leading-none text-[clamp(4.75rem,23vw,8rem)] shrink-0 text-center translate-x-[2px] tabular-nums">
           {stateStudying
             ? `${studying_minutes}:${studying_seconds
                 .toString()
@@ -265,14 +342,14 @@ export default function Timer({
             : `${break_minutes}:${break_seconds.toString().padStart(2, "0")}`}
         </h1>
 
-        <div className="flex flex-row justify-center items-center shrink-0">
+        <div className="w-full max-w-sm grid grid-cols-2 justify-center items-center shrink-0">
           <div
-            className={`px-2 py-2 w-36 rounded-md flex flex-row justify-center items-center ${
+            className={`px-2 py-2 rounded-md flex flex-row justify-center items-center ${
               stateStudying ? "bg-[#182229]" : "bg-transparent"
             }`}
           >
             <button
-              className="font-pixel text-3xl relative"
+              className="font-pixel text-[clamp(1.55rem,8vw,2rem)] leading-none relative"
               onClick={() => {
                 void handleSwitchToStudying();
               }}
@@ -282,12 +359,12 @@ export default function Timer({
           </div>
 
           <div
-            className={`px-2 py-2 w-36 rounded-md flex flex-row justify-center items-center ${
+            className={`px-2 py-2 rounded-md flex flex-row justify-center items-center ${
               !stateStudying ? "bg-[#182229]" : "bg-transparent"
             }`}
           >
             <button
-              className="font-pixel text-3xl relative"
+              className="font-pixel text-[clamp(1.55rem,8vw,2rem)] leading-none relative"
               onClick={() => {
                 void handleSwitchToBreak();
               }}
@@ -297,13 +374,13 @@ export default function Timer({
           </div>
         </div>
 
-        <div className="flex flex-row justify-center items-start gap-8 font-pixel text-2xl shrink-0">
-          <div className="flex flex-col items-center gap-2">
-            <span>Study: {defaultStudyingTime / 60}m</span>
+        <div className="w-full max-w-sm grid grid-cols-2 max-[380px]:grid-cols-1 gap-4 font-pixel text-[clamp(1.25rem,6vw,1.5rem)] shrink-0">
+          <div className="flex flex-col items-center gap-2 min-w-0">
+            <span className="whitespace-nowrap">Study: {defaultStudyingTime / 60}m</span>
 
             <div className="flex gap-2">
               <button
-                className="px-3 py-1 rounded bg-[#182229]"
+                className="min-w-11 px-3 py-1 rounded bg-[#182229]"
                 onClick={() => {
                   void changeStudyMinutes(-5);
                 }}
@@ -312,7 +389,7 @@ export default function Timer({
               </button>
 
               <button
-                className="px-3 py-1 rounded bg-[#182229]"
+                className="min-w-11 px-3 py-1 rounded bg-[#182229]"
                 onClick={() => {
                   void changeStudyMinutes(5);
                 }}
@@ -322,12 +399,12 @@ export default function Timer({
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-2">
-            <span>Break: {defaultBreakTime / 60}m</span>
+          <div className="flex flex-col items-center gap-2 min-w-0">
+            <span className="whitespace-nowrap">Break: {defaultBreakTime / 60}m</span>
 
             <div className="flex gap-2">
               <button
-                className="px-3 py-1 rounded bg-[#182229]"
+                className="min-w-11 px-3 py-1 rounded bg-[#182229]"
                 onClick={() => {
                   void changeBreakMinutes(-1);
                 }}
@@ -336,7 +413,7 @@ export default function Timer({
               </button>
 
               <button
-                className="px-3 py-1 rounded bg-[#182229]"
+                className="min-w-11 px-3 py-1 rounded bg-[#182229]"
                 onClick={() => {
                   void changeBreakMinutes(1);
                 }}
@@ -349,7 +426,7 @@ export default function Timer({
 
         <div className="flex flex-row justify-center items-center gap-2 shrink-0">
           <div
-            className={`p-4 rounded-xl flex justify-center items-center ${
+            className={`p-3 sm:p-4 rounded-xl flex justify-center items-center ${
               studyingIsRunning || breakIsRunning
                 ? "bg-[#182229]"
                 : "bg-transparent"
@@ -371,12 +448,12 @@ export default function Timer({
                     ? "/Images/PauseButton.png"
                     : "/Images/StartButton.png"
                 }
-                className="w-12 h-12 object-contain [image-rendering:pixelated]"
+                className="w-11 h-11 sm:w-12 sm:h-12 object-contain [image-rendering:pixelated]"
               />
             </button>
           </div>
 
-          <div className="p-4 rounded-xl flex justify-center items-center">
+          <div className="p-3 sm:p-4 rounded-xl flex justify-center items-center">
             <button
               className="font-pixel text-3xl"
               onClick={() => {
@@ -389,7 +466,7 @@ export default function Timer({
                 height={48}
                 alt="Reset"
                 src="/Images/ResetButton.png"
-                className="w-12 h-12 object-contain [image-rendering:pixelated]"
+                className="w-11 h-11 sm:w-12 sm:h-12 object-contain [image-rendering:pixelated]"
               />
             </button>
           </div>

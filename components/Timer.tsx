@@ -10,6 +10,16 @@ type TimerProps = {
   initialBreakMinutes: number;
 };
 
+const APP_TITLE = "LockedInDoro";
+
+function formatTimerTitle(seconds: number, mode: "Study" | "Break") {
+  const safeSeconds = Math.max(seconds, 0);
+  const minutes = Math.floor(safeSeconds / 60);
+  const remainingSeconds = safeSeconds % 60;
+
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")} ${mode} | ${APP_TITLE}`;
+}
+
 export default function Timer({
   isLoggedIn,
   initialStudyMinutes,
@@ -42,6 +52,10 @@ export default function Timer({
 
   const break_minutes = Math.floor(breakTime / 60);
   const break_seconds = breakTime % 60;
+
+  const updateDocumentTitle = useCallback((seconds: number, mode: "Study" | "Break") => {
+    document.title = formatTimerTitle(seconds, mode);
+  }, []);
 
   async function saveTimerSettings(studyMinutes: number, breakMinutes: number) {
     if (!isLoggedIn) return;
@@ -134,7 +148,10 @@ export default function Timer({
       const deadline = activeDeadlineRef.current;
       if (deadline === null) return;
 
-      setStudyingTime(Math.max(Math.ceil((deadline - Date.now()) / 1000), 0));
+      const secondsLeft = Math.max(Math.ceil((deadline - Date.now()) / 1000), 0);
+
+      updateDocumentTitle(secondsLeft, "Study");
+      setStudyingTime(secondsLeft);
     };
 
     updateRemaining();
@@ -148,7 +165,7 @@ export default function Timer({
       window.removeEventListener("visibilitychange", updateRemaining);
       window.removeEventListener("focus", updateRemaining);
     };
-  }, [studyingIsRunning, stateStudying, syncStudyProgress]);
+  }, [studyingIsRunning, stateStudying, syncStudyProgress, updateDocumentTitle]);
 
   useEffect(() => {
     if (!breakIsRunning || stateStudying) return;
@@ -157,7 +174,10 @@ export default function Timer({
       const deadline = activeDeadlineRef.current;
       if (deadline === null) return;
 
-      setBreakTime(Math.max(Math.ceil((deadline - Date.now()) / 1000), 0));
+      const secondsLeft = Math.max(Math.ceil((deadline - Date.now()) / 1000), 0);
+
+      updateDocumentTitle(secondsLeft, "Break");
+      setBreakTime(secondsLeft);
     };
 
     updateRemaining();
@@ -171,7 +191,19 @@ export default function Timer({
       window.removeEventListener("visibilitychange", updateRemaining);
       window.removeEventListener("focus", updateRemaining);
     };
-  }, [breakIsRunning, stateStudying]);
+  }, [breakIsRunning, stateStudying, updateDocumentTitle]);
+
+  useEffect(() => {
+    if (stateStudying) {
+      updateDocumentTitle(studyingTime, "Study");
+    } else {
+      updateDocumentTitle(breakTime, "Break");
+    }
+
+    return () => {
+      document.title = APP_TITLE;
+    };
+  }, [breakTime, stateStudying, studyingTime, updateDocumentTitle]);
 
   useEffect(() => {
     if (!studyingIsRunning || !stateStudying || studyingTime !== 0) return;

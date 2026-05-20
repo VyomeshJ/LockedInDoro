@@ -12,7 +12,19 @@ type StatsProps = {
   weekStats: WeekDayStat[];
 };
 
-function formatMinutes(minutes: number) {
+function formatStudyDuration(minutes: number, includeDays = false) {
+  if (includeDays && minutes >= 1440) {
+    const days = Math.floor(minutes / 1440);
+    const hrs = Math.floor((minutes % 1440) / 60);
+    const mins = minutes % 60;
+    const parts = [`${days}d`];
+
+    if (hrs > 0) parts.push(`${hrs}h`);
+    if (mins > 0) parts.push(`${mins}m`);
+
+    return parts.join(" ");
+  }
+
   const hrs = Math.floor(minutes / 60);
   const mins = minutes % 60;
 
@@ -56,15 +68,19 @@ export default function Stats({
       </h1>
 
       <div className="w-full max-w-xl flex flex-col gap-4 sm:gap-6 font-pixel text-[clamp(1.25rem,5vw,1.5rem)] flex-1 min-h-0">
-        <div className="grid grid-cols-2 max-[380px]:grid-cols-1 gap-3 sm:gap-4 shrink-0">
+        <div className="grid grid-cols-2 max-[520px]:grid-cols-1 gap-3 sm:gap-4 shrink-0">
           <div className="flex flex-col gap-1 sm:gap-2 p-3 sm:p-4 rounded-lg bg-[#182229] min-w-0">
             <span className="text-[clamp(1rem,4vw,1.125rem)] opacity-80">Total Studied</span>
-            <span className="text-[clamp(1.75rem,8vw,1.875rem)] leading-none">{formatMinutes(totalMinutes)}</span>
+            <span className="text-[clamp(1.5rem,7vw,1.875rem)] leading-tight whitespace-nowrap">
+              {formatStudyDuration(totalMinutes, true)}
+            </span>
           </div>
 
           <div className="flex flex-col gap-1 sm:gap-2 p-3 sm:p-4 rounded-lg bg-[#182229] min-w-0">
             <span className="text-[clamp(1rem,4vw,1.125rem)] opacity-80">Today</span>
-            <span className="text-[clamp(1.75rem,8vw,1.875rem)] leading-none">{formatMinutes(todayMinutes)}</span>
+            <span className="text-[clamp(1.5rem,7vw,1.875rem)] leading-tight whitespace-nowrap">
+              {formatStudyDuration(todayMinutes)}
+            </span>
           </div>
         </div>
 

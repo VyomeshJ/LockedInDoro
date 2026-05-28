@@ -71,14 +71,14 @@ export default function Stats({
         <div className="grid grid-cols-2 max-[520px]:grid-cols-1 gap-3 sm:gap-4 shrink-0">
           <div className="flex flex-col gap-1 sm:gap-2 p-3 sm:p-4 rounded-lg bg-[#182229] min-w-0">
             <span className="text-[clamp(1rem,4vw,1.125rem)] opacity-80">Total Studied</span>
-            <span className="text-[clamp(1.5rem,7vw,1.875rem)] leading-tight whitespace-nowrap">
+            <span className="font-pixel-number text-[clamp(1.5rem,7vw,1.875rem)] leading-tight whitespace-nowrap">
               {formatStudyDuration(totalMinutes, true)}
             </span>
           </div>
 
           <div className="flex flex-col gap-1 sm:gap-2 p-3 sm:p-4 rounded-lg bg-[#182229] min-w-0">
             <span className="text-[clamp(1rem,4vw,1.125rem)] opacity-80">Today</span>
-            <span className="text-[clamp(1.5rem,7vw,1.875rem)] leading-tight whitespace-nowrap">
+            <span className="font-pixel-number text-[clamp(1.5rem,7vw,1.875rem)] leading-tight whitespace-nowrap">
               {formatStudyDuration(todayMinutes)}
             </span>
           </div>
@@ -102,7 +102,7 @@ export default function Stats({
                   key={`${day.label}-${index}`}
                   className="flex-1 h-full flex flex-col justify-end items-center gap-2 sm:gap-3 min-w-0"
                 >
-                  <span className="text-xs sm:text-sm opacity-80 h-4 sm:h-5">
+                  <span className="font-pixel-number text-xs sm:text-sm opacity-80 h-4 sm:h-5">
                     {day.minutes > 0 ? day.minutes : ""}
                   </span>
 

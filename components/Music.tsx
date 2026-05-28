@@ -109,7 +109,7 @@ export default function Music({
         <div className="flex flex-col gap-2 shrink-0">
           <div className="flex justify-between items-center">
             <span>Master Volume</span>
-            <span>{masterVolume}</span>
+            <span className="font-pixel-number">{masterVolume}</span>
           </div>
 
           <input
@@ -257,7 +257,7 @@ function SoundRow({
           className="w-full accent-white"
         />
 
-        <span className="w-12 text-right shrink-0">{volume}</span>
+        <span className="font-pixel-number w-12 text-right shrink-0">{volume}</span>
       </div>
     </div>
   );

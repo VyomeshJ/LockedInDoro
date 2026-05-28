@@ -366,7 +366,7 @@ export default function Timer({
   return (
     <div className="w-full h-full min-h-0 overflow-y-auto">
       <div className="w-full min-h-full flex flex-col justify-center items-center px-3 sm:px-6 py-4 gap-[clamp(1.25rem,5svh,2.5rem)]">
-        <h1 className="font-pixel leading-none text-[clamp(4.75rem,23vw,8rem)] shrink-0 text-center translate-x-[2px] tabular-nums">
+        <h1 className="font-pixel-number leading-none text-[clamp(4.75rem,23vw,8rem)] shrink-0 text-center translate-x-[2px] tabular-nums">
           {stateStudying
             ? `${studying_minutes}:${studying_seconds
                 .toString()
@@ -408,7 +408,9 @@ export default function Timer({
 
         <div className="w-full max-w-sm grid grid-cols-2 max-[380px]:grid-cols-1 gap-4 font-pixel text-[clamp(1.25rem,6vw,1.5rem)] shrink-0">
           <div className="flex flex-col items-center gap-2 min-w-0">
-            <span className="whitespace-nowrap">Study: {defaultStudyingTime / 60}m</span>
+            <span className="whitespace-nowrap">
+              Study: <span className="font-pixel-number">{defaultStudyingTime / 60}m</span>
+            </span>
 
             <div className="flex gap-2">
               <button
@@ -432,7 +434,9 @@ export default function Timer({
           </div>
 
           <div className="flex flex-col items-center gap-2 min-w-0">
-            <span className="whitespace-nowrap">Break: {defaultBreakTime / 60}m</span>
+            <span className="whitespace-nowrap">
+              Break: <span className="font-pixel-number">{defaultBreakTime / 60}m</span>
+            </span>
 
             <div className="flex gap-2">
               <button

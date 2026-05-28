@@ -10,7 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-pixel: var(--font-tiny5);
+  --font-pixel: var(--font-pixelify-sans);
+  --font-pixel-number: var(--font-tiny5);
 }
 
 .custom-scroll {

@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Tiny5 } from "next/font/google";
+import { Geist, Geist_Mono, Pixelify_Sans, Tiny5 } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+
+const pixelifySans = Pixelify_Sans({
+  variable: "--font-pixelify-sans",
+  subsets: ["latin"],
+});
 
 const tiny5 = Tiny5({
   weight: "400",
@@ -32,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${tiny5.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${pixelifySans.variable} ${tiny5.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SessionProvider>

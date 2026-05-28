@@ -386,7 +386,7 @@ export default function Timer({
                 void handleSwitchToStudying();
               }}
             >
-              Studyingg
+              Studying
             </button>
           </div>
 

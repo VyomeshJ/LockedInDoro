@@ -18,6 +18,7 @@ export default async function Home() {
     return (
       <HomeClient
         isLoggedIn={false}
+        userId={null}
         initialStudyMinutes={25}
         initialBreakMinutes={5}
         initialMasterVolume={100}
@@ -139,6 +140,7 @@ export default async function Home() {
   return (
     <HomeClient
       isLoggedIn={true}
+      userId={session.user.id}
       initialStudyMinutes={settings.default_study_minutes}
       initialBreakMinutes={settings.default_break_minutes}
       initialMasterVolume={settings.master_volume}

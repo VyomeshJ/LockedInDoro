@@ -6,9 +6,11 @@ import Timer from "@/components/Timer";
 import Music from "@/components/Music";
 import Stats from "@/components/Stats";
 import SignInButton from "@/components/SignInButton";
+import TabConflictOverlay from "@/components/TabConflictOverlay";
 
 type HomeClientProps = {
   isLoggedIn: boolean;
+  userId?: string | null;
   initialStudyMinutes: number;
   initialBreakMinutes: number;
   initialMasterVolume: number;
@@ -26,6 +28,7 @@ type HomeClientProps = {
 
 export default function HomeClient({
   isLoggedIn,
+  userId,
   initialStudyMinutes,
   initialBreakMinutes,
   initialMasterVolume,
@@ -41,6 +44,8 @@ export default function HomeClient({
 
   return (
     <div className="bg-[#182229] w-full h-[100svh] min-h-[420px] flex flex-col relative overflow-hidden p-3 sm:p-4 lg:p-6">
+      <TabConflictOverlay isLoggedIn={isLoggedIn} userId={userId} />
+
       <div className="w-full flex justify-end shrink-0 mb-3 sm:mb-4 z-30">
         <SignInButton />
       </div>
